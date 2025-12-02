@@ -26,7 +26,7 @@ import { z } from "zod";
 import { persist } from "zustand/middleware";
 import { DataSourcesPanel } from "./components/DataSourcesPanel";
 import { MainView } from "./components/MainView";
-import { AI_SETTINGS } from "./config";
+import { createAiSettings, ApiKeys } from "./config";
 import { createWasmMotherDuckDbConnector } from "@sqlrooms/motherduck";
 
 export const RoomPanelTypes = z.enum(["room-details", "data-sources", "view-configuration", MAIN_VIEW] as const);
@@ -35,9 +35,9 @@ export type RoomPanelTypes = z.infer<typeof RoomPanelTypes>;
 export type RoomState = RoomShellSliceState & AiSliceState & SqlEditorSliceState & AiSettingsSliceState;
 
 /**
- * Create a customized room store with the provided MotherDuck token
+ * Create a customized room store with the provided MotherDuck token and API keys
  */
-export const createRoomStoreWithToken = (mdToken: string) =>
+export const createRoomStoreWithToken = (mdToken: string, apiKeys: ApiKeys = {}) =>
   createRoomStore<RoomState>(
     persist(
       (set, get, store) => ({
@@ -105,7 +105,7 @@ export const createRoomStoreWithToken = (mdToken: string) =>
         ...createSqlEditorSlice()(set, get, store),
 
         // Ai model config slice
-        ...createAiSettingsSlice({ config: AI_SETTINGS })(set, get, store),
+        ...createAiSettingsSlice({ config: createAiSettings(apiKeys) })(set, get, store),
 
         // Ai slice
         ...createAiSlice({
