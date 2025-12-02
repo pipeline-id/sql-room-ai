@@ -1,5 +1,4 @@
 import {
-  AiSettingsSliceConfig,
   AiSettingsSliceState,
   AiSliceConfig,
   AiSliceState,
@@ -19,7 +18,11 @@ import {
   RoomShellSliceState,
   StateCreator,
 } from "@sqlrooms/room-shell";
-import { createSqlEditorSlice, SqlEditorSliceConfig, SqlEditorSliceState } from "@sqlrooms/sql-editor";
+import {
+  createSqlEditorSlice,
+  SqlEditorSliceConfig,
+  SqlEditorSliceState,
+} from "@sqlrooms/sql-editor";
 import { createVegaChartTool } from "@sqlrooms/vega";
 import { DatabaseIcon } from "lucide-react";
 import { z } from "zod";
@@ -29,15 +32,26 @@ import { MainView } from "./components/MainView";
 import { createAiSettings, ApiKeys } from "./config";
 import { createWasmMotherDuckDbConnector } from "@sqlrooms/motherduck";
 
-export const RoomPanelTypes = z.enum(["room-details", "data-sources", "view-configuration", MAIN_VIEW] as const);
+export const RoomPanelTypes = z.enum([
+  "room-details",
+  "data-sources",
+  "view-configuration",
+  MAIN_VIEW,
+] as const);
 export type RoomPanelTypes = z.infer<typeof RoomPanelTypes>;
 
-export type RoomState = RoomShellSliceState & AiSliceState & SqlEditorSliceState & AiSettingsSliceState;
+export type RoomState = RoomShellSliceState &
+  AiSliceState &
+  SqlEditorSliceState &
+  AiSettingsSliceState;
 
 /**
  * Create a customized room store with the provided MotherDuck token and API keys
  */
-export const createRoomStoreWithToken = (mdToken: string, apiKeys: ApiKeys = {}) =>
+export const createRoomStoreWithToken = (
+  mdToken: string,
+  apiKeys: ApiKeys = {}
+) =>
   createRoomStore<RoomState>(
     persist(
       (set, get, store) => ({
@@ -105,7 +119,11 @@ export const createRoomStoreWithToken = (mdToken: string, apiKeys: ApiKeys = {})
         ...createSqlEditorSlice()(set, get, store),
 
         // Ai model config slice
-        ...createAiSettingsSlice({ config: createAiSettings(apiKeys) })(set, get, store),
+        ...createAiSettingsSlice({ config: createAiSettings(apiKeys) })(
+          set,
+          get,
+          store
+        ),
 
         // Ai slice
         ...createAiSlice({
